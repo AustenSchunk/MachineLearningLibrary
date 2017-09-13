@@ -10,15 +10,10 @@ class LinearClassificationModel():
 
     """
     This module includes the following classification models:
-    Binary:
         -- Perceptron and Logistic Regression
-    Multi-class:
-        -- Logistic Regression
-
+        
     Methods used to solve logistic regression problem:
-    Binary:
         -- Iteratively reweighted least squares
-    Both Binary and Multi-Class:
         -- Batch stochastic gradient descent
         -- Newton conjugate gradient
         -- Broyden–Fletcher–Goldfarb–Shanno algorithm
