@@ -5,3 +5,6 @@ Logistic Regression using iteratively-reweighted least squares, conjugate gradie
 Rosenblatt's Perceptron <br/>
 Both Quadratic and Linear Discriminant Analysis <br/> 
 Multinomial and Bernoulli Naive Bayes
+## Dependencies
+General: numpy, scipy, and scikit-learn </br>
+Specific: Linear Models have the option of showing learning rates, so matplotlib and seaborn are needed
