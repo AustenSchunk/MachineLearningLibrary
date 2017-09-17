@@ -10,15 +10,10 @@ class LinearClassificationModel():
 
     """
     This module includes the following classification models:
-    Binary:
         -- Perceptron and Logistic Regression
-    Multi-class:
-        -- Logistic Regression
 
     Methods used to solve logistic regression problem:
-    Binary:
         -- Iteratively reweighted least squares
-    Both Binary and Multi-Class:
         -- Batch stochastic gradient descent
         -- Newton conjugate gradient
         -- Broyden–Fletcher–Goldfarb–Shanno algorithm
@@ -59,8 +54,8 @@ class LinearClassificationModel():
         ----
         The choice of step size search is not arbitrary, but another step size
         can algorithm can easily replace this one.
-
         """
+        
         return ((t + iter_num) ** (-k))
 
 
@@ -78,6 +73,7 @@ class LinearClassificationModel():
         -------
         y : bit vector containing 0 or 1 depending on which class each belongs to
         """
+        
         y[y >= threshold] = 1
         y[y < threshold] = 0
         return y
@@ -98,8 +94,8 @@ class LinearClassificationModel():
         Returns
         -------
         y: bit vector containing 0 or 1 depending on which class each belongs to
-
         """
+        
         n_pred = expit(safedot(X, w))
         y = self.threshold(n_pred, threshold)
         return y
@@ -120,6 +116,7 @@ class LinearClassificationModel():
         -------
         error : response of predictions compared to actual values
         """
+        
         error = safedot(la.pinv(S),(y - pi))
         return error
 
@@ -136,7 +133,6 @@ class LinearClassificationModel():
         max_iters : maximum number of iterations before the algorithm will terminate
         l2_reg : amount of l2 regularization to be applied
         save_weights : whether or not the weights obtain from each iteration should be saved
-
         """
 
         w = np.zeros(X.shape[1])
@@ -186,8 +182,8 @@ class LinearClassificationModel():
         the second is empty
         G : Gradient matrix containing the initial gradient vector and an empty slot for the next
         gradient vector
-
         """
+        
         W = np.zeros(shape = (2, X.shape[1])) # initializing weights 
         B = np.zeros(shape = (2, X.shape[1], X.shape[1]))
 
@@ -249,6 +245,7 @@ class LinearClassificationModel():
         ----
         Significantly faster convergence with normalized X
         """
+        
         W, B, G = self.init_bfgs(X,y)
         weights = np.empty(shape = (iterations, W.shape[1]))
 
@@ -291,6 +288,7 @@ class LinearClassificationModel():
         batch : batch of data that will be used in batch sgd algorithm
         labels: bit vector of corresponding to class labels of the batch of data
         """
+        
         max_idx = iteration * size % X.shape[0]
         min_idx = max_idx - size % X.shape[0]
         if max_idx < size:
@@ -316,6 +314,7 @@ class LinearClassificationModel():
         size : determines the size of each batch of data
         save_weights : whether or not the weights obtain from each iteration should be saved
         """
+        
         w = w_0 = np.zeros(X.shape[1])
         if save_weights:
             W = np.zeros(shape=(max_iters, X.shape[1]))
@@ -358,6 +357,7 @@ class LinearClassificationModel():
         -------
         x : approximate solution to the linear equation of the form Ax = b
         """
+        
         if x is None:
             x = np.ones(b.shape[0]) # Initialize random x
         r_0 = safedot(A, x) - b # Calculating residual 
@@ -391,6 +391,7 @@ class LinearClassificationModel():
         epsilon : small number to be used to test for approximate convergence when determining
         the direction to be descended
         """
+        
         w = np.zeros(X.shape[1])
         if save_weights:
             W = np.zeros(shape=(max_iters, X.shape[1]))
@@ -419,6 +420,7 @@ class LinearClassificationModel():
         ----------
         X : M x D matrix composed of numerical features, where each feature is 1 x D
         """
+        
         self.predictions = self.convert_labels_binary(X, self.w)
 
 
@@ -429,9 +431,7 @@ class LinearClassificationModel():
         Parameters
         ----------
         X : N x D matrix composed of numerical features
-        y : either N X 1 or N X M, where M is the number of classes. If N X 1, y is a bit vector corresponding
-        to whether each of the N features is in class 1 or 0. If N X M each of the N row vectors is a bit vector, 
-        where one bit will be turned on and that will correspond to its class
+        y : N X 1bit vector corresponding to whether each of the N features is in class 1 or 0 
         solver : method of minimizing the likelihood function
         max_iters : maximum number of iterations to be used in the minimization of the likelihood function
         l2_reg : determines the amount of regularization that will be applied at each iteration
@@ -443,13 +443,7 @@ class LinearClassificationModel():
             raise Exception("Must choose proper solver")
 
         if (np.unique(y).shape[0]) > 2:
-            self.binary = False
-            if solver not in ['newton_cg', 'batch_sgd']:
-                raise Exception("Must use proper solver for multi-class data")
-            else:
-                self.model = 'Multi-Class'
-                self.solver = solver
-                pass
+            raise Exception("Module does not currently support multi-class classification")
         else: 
             self.binary = True;
 
