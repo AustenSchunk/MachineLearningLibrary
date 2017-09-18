@@ -9,3 +9,5 @@ Kernelized and standard k nearest neighbors algorithm <br/>
 ## Dependencies
 General: numpy, scipy, and scikit-learn </br>
 Specific: Linear Models have the option of showing learning rates, so matplotlib and seaborn are needed
+## Installation
+Can install by using the command $ pip install LibML
