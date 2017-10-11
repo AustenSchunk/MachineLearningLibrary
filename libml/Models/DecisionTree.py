@@ -13,12 +13,28 @@ References
 
 
 class DecisionTree(metaclass=ABCMeta):
+    """
+    Attributes
+    ----------
+    cost_func : cost function for tree
+    max_depth : maximum depth of tree
+    min_size : minimum size of the data being split
+    min_impurity : minimum percent of homogenous data required for the building
+    of certain branch of tree to be halted // used for classification
+    min_cost : minimum cost difference i.e. the minimum amount gained from splitting data
+    in_forest : specifies whether tree will be a part of a random forest
 
-    def __init__(self, cost_func, max_depth, min_size, min_impurity, min_cost):
+    Note
+    ----
+    This class is not to be instantiated. It is simply a base class for the
+    classification and regression tree classes
+    """
+
+    def __init__(self, cost_func, max_depth, min_size, min_impurity, min_cost, in_forest):
         """
         Initializes an abstract Decision tree
 
-        Attributes
+        Parameters
         ----------
         cost_func : cost function for tree
         max_depth : maximum depth of tree
@@ -26,12 +42,9 @@ class DecisionTree(metaclass=ABCMeta):
         min_impurity : minimum percent of homogenous data required for the building
         of certain branch of tree to be halted // used for classification
         min_cost : minimum cost difference i.e. the minimum amount gained from splitting data
-
-        Note
-        ----
-        This class is not to be instantiated. It is simply a base class for the
-        classification and regression tree classes
+        in_forest : specifies whether tree will be a part of a random forest
         """
+
         if isinstance(self, RegressionTree):
             self.cost_func = self.regression_cost
         else:
@@ -48,6 +61,7 @@ class DecisionTree(metaclass=ABCMeta):
         self.min_size = min_size
         self.min_impurity = min_impurity
         self.min_cost = min_cost
+        self.in_forest = in_forest
 
     def regression_cost(self, y):
         """
@@ -150,7 +164,17 @@ class DecisionTree(metaclass=ABCMeta):
         split_feature = None
         min_response = None
 
-        for feature in range(X.shape[1]):
+        possible_samples = range(X.shape[1])
+        if (self.in_forest):
+
+            if isinstance(self, RegressionTree):
+                sample_features = np.random.choice(possible_samples, size = int(X.shape[1] / 3))
+            else:
+                sample_features = np.random.choice(possible_samples, size = int(np.sqrt(X.shape[1])))
+        else:
+            sample_features = possible_samples
+
+        for feature in sample_features:
             for thresh in np.unique(X[:, feature]):
                 left = y[X[:, feature] <= thresh]
                 right = y[X[:, feature] > thresh]
@@ -305,7 +329,7 @@ class DecisionTree(metaclass=ABCMeta):
         """
 
         node = DecisionNode()
-        self.head = self.grow_tree(node, X, y, 0)
+        self.root = self.grow_tree(node, X, y, 0)
 
     def predict(self, X):
         """
@@ -322,7 +346,7 @@ class DecisionTree(metaclass=ABCMeta):
 
         predictions = np.zeros(X.shape[0])
         for i, observation in enumerate(X):
-            predictions[i] = self.single_prediction(observation, self.head)
+            predictions[i] = self.single_prediction(observation, self.root)
         return predictions
 
 
@@ -340,25 +364,28 @@ class RegressionTree(DecisionTree):
     min_cost : minimum cost difference i.e. the minimum amount gained from splitting data
     """
 
-    def __init__(self, max_depth=None, min_size=5, min_cost=0):
+    def __init__(self, max_depth=None, min_size=5, min_cost=0, in_forest=False):
         """
         Parameters
         ----------
         max_depth : maximum depth of tree
         min_size : minimum size of the data being split
         min_cost : minimum cost difference i.e. the minimum amount gained from splitting data
+        in_forest : specifies whether tree will be a part of a random forest
         """
 
         self.cost = 'mse'
         self.max_depth = max_depth
         self.min_size = min_size
         self.min_cost = min_cost
+        self.in_forest = in_forest
         super().__init__(
             cost_func=self.cost,
             max_depth=self.max_depth,
             min_size=self.min_size,
             min_impurity=None,
-            min_cost=self.min_cost)
+            min_cost=self.min_cost,
+            in_forest=self.in_forest)
 
 
 class ClassificationTree(DecisionTree):
@@ -375,25 +402,28 @@ class ClassificationTree(DecisionTree):
     min_cost : minimum cost difference i.e. the minimum amount gained from splitting data
     """
 
-    def __init__(self, cost_func='mcr', max_depth=None, min_size=1, min_cost=0):
+    def __init__(self, cost_func='mcr', max_depth=None, min_size=1, min_cost=0, in_forest=False):
         """
         Parameters
         ----------
         max_depth : maximum depth of tree
         min_size : minimum size of the data being split
         min_cost : minimum cost difference i.e. the minimum amount gained from splitting data
+        in_forest : specifies whether tree will be a part of a random forest
         """
 
         self.cost = cost_func
         self.max_depth = max_depth
         self.min_size = min_size
         self.min_cost = min_cost
+        self.in_forest = in_forest
         super().__init__(
             cost_func=self.cost,
             max_depth=self.max_depth,
             min_size=self.min_size,
             min_impurity=None,
-            min_cost=self.min_cost)
+            min_cost=self.min_cost,
+            in_forest=self.in_forest)
 
 
 class DecisionNode():
