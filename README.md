@@ -7,6 +7,7 @@ Both Quadratic and Linear Discriminant Analysis <br/>
 Multinomial and Bernoulli Naive Bayes <br/>
 Kernelized and standard k nearest neighbors algorithm <br/>
 Classification and Regression Trees <br/>
+Random Forest <br/>
 ## Dependencies
 General: numpy, scipy, and scikit-learn </br>
 Specific: Linear Models have the option of showing learning rates, so matplotlib and seaborn are needed
